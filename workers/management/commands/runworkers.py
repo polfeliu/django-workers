@@ -45,7 +45,7 @@ class Command(BaseCommand):
 
         log.debug('worker: ready for tasks...')
         while not self.__SIGINT:
-
+            print("Listening for connections")
             while True:
                 try:
                     id = completed_queue.get(block=False)
@@ -78,6 +78,9 @@ class Command(BaseCommand):
                     Task.objects.exclude(pk__in=keep).filter(status=Task.COMPLETED).delete()
             else:
                 time.sleep(SLEEP)
+
+
+        log.debug('worker: exiting ...')
 
 
 def worker(worker_id):
