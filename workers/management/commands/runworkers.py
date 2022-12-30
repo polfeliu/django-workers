@@ -45,7 +45,7 @@ class Command(BaseCommand):
 
         log.debug('worker: ready for tasks...')
         while not self.__SIGINT:
-            print("Listening for connections")
+            print("worker: polling for tasks to execute...")
             while True:
                 try:
                     id = completed_queue.get(block=False)
