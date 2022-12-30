@@ -55,14 +55,14 @@ class Command(BaseCommand):
 
             tasks = Task.objects.filter(run_at__lte=timezone.now(), completed_at=None)
 
+            all_tasks_queued = True
+
             if tasks:
                 for task in tasks:
-                    if task.id in to_be_completed_tasks:
-                        # Already queued
-                        continue
-
-                    to_be_completed_tasks.append(task.id)
-                    work_queue.put(task.id)
+                    if task.id not in to_be_completed_tasks:
+                        to_be_completed_tasks.append(task.id)
+                        work_queue.put(task.id)
+                        all_tasks_queued = False
 
                 # if PURGE is 1000, we will keep the latest 1000 completed tasks
                 keep = (
@@ -77,7 +77,8 @@ class Command(BaseCommand):
                     # any that are not in keep
                     Task.objects.exclude(pk__in=keep).filter(status=Task.COMPLETED).delete()
 
-            time.sleep(SLEEP)
+            if all_tasks_queued:
+                time.sleep(SLEEP)
 
         log.debug('worker: exiting ...')
 
