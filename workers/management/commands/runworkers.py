@@ -76,9 +76,8 @@ class Command(BaseCommand):
                     # If there are more than PURGE (ex. 1000) completed tasks, delete
                     # any that are not in keep
                     Task.objects.exclude(pk__in=keep).filter(status=Task.COMPLETED).delete()
-            else:
-                time.sleep(SLEEP)
 
+            time.sleep(SLEEP)
 
         log.debug('worker: exiting ...')
 
