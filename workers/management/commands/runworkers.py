@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from ...models import Task
 from ...util import autodiscover
-from ...worker import registry, scheduled
+from ...worker import registry
 from ...settings import SLEEP, PURGE, WORKERS_CONCURRENCY
 
 log = logging.getLogger(__name__)
@@ -35,9 +35,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Find any INSTALLED_APPS with a `tasks.py` file and import it
         autodiscover()
-
-        for t in scheduled:
-            Task.create_scheduled_task(t['handler'], t['schedule'])
 
         worker_pool = ThreadPoolExecutor(WORKERS_CONCURRENCY)
         worker_pool.map(worker, range(WORKERS_CONCURRENCY))
